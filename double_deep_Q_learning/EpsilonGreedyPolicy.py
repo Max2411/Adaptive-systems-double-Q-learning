@@ -4,7 +4,7 @@ import gym
 
 
 class EpsilonGreedyPolicy:
-    def __init__(self, env, epsilon) -> None:#, model):
+    def __init__(self, env, epsilon) -> None:  # model):
         self.env = env
         self.action_space = env.action_space.n
         self.action_list = [i for i in range(self.action_space)]
