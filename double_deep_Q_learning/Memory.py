@@ -1,16 +1,18 @@
 import collections
+import random
 
 
 class Memory:
-    def __init__(self, size) -> None:
-        self.size = size
-        self.deque = collections.deque([])  # todo this or
-        self.queue = []                     # todo this
+    def __init__(self, size, batch_size) -> None:
+        self.deque = collections.deque(maxlen=size)
+        self.batch_size = batch_size
+        self.exp = collections.namedtuple("experience", ["state", "action", "reward", "next_state", "done"])
 
     def sample(self):
         """Returns a sample of the memory"""
-        pass
+        return random.sample(self.deque, self.batch_size)
 
-    def record(self) -> None:
+    def record(self, state, action, reward, next_state, done) -> None:
         """Append new memory to the memory list"""
-        pass
+        mem = self.exp(state, action, reward, next_state, done)
+        self.deque.append(mem)
