@@ -6,13 +6,13 @@ To install the required packages, run the following command:
 pip install .
 ```
 
-## Research of results
+## Results:
 
 Based on `models/deep_q_model_92.pth`
 x-axis: amount of episodes,   
 y-axis: Mean Squared Error  
 
-![Graph of the results](https://github.com/Max2411/Adaptive-systems-double-Q-learning/blob/main/graph_of_results.png)
+![Graph of the results](https://github.com/Max2411/Adaptive-systems-double-Q-learning/blob/main/graph_of_results.PNG)
 
 #### Decaying epsilon
 The current code for decaying the epsilon does not work properly. Fixing this issue would probably help train better models.
@@ -31,7 +31,7 @@ lands somewhere on the right most of the time this might be because the model ha
 how to safely land and would start learning where after this point. This could also be a result of saving a model that is not the best out
 of its batch.
 
-![wrong landing](https://github.com/Max2411/Adaptive-systems-double-Q-learning/blob/main/wrong_landing_space.png)
+![wrong landing](https://github.com/Max2411/Adaptive-systems-double-Q-learning/blob/main/wrong_landing_space.PNG)
 
 
 
