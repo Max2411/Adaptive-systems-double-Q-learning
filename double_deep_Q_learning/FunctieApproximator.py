@@ -39,14 +39,14 @@ class FunctieApproximator:
 
     def save_network(self, score) -> None:
         """Save the policy model to the models folder."""
-        model_name = f"deep_q_model_{score}"
-        torch.save(self.policy_network, Path("models") / model_name)
+        model_name = f"deep_q_model_{score}.pth"
+        torch.save(self.policy_network.state_dict(), Path("models") / model_name)
 
     def load_network(self, model_name: str) -> None:
         """Load a policy out of the models folder"""
         model = torch.load(Path("models") / model_name)
-        model.eval()
-        return model
+        self.policy_network.load_state_dict(model)
+        self.policy_network.eval()
 
     def select_action(self, state) -> int:
         """Selects an action based of the policy according to epsilon else select a random action."""
