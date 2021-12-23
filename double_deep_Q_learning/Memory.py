@@ -2,6 +2,8 @@ import collections
 import random
 import numpy as np
 import torch
+from typing import Tuple
+
 
 class Memory:
     def __init__(self, size, batch_size) -> None:
@@ -9,26 +11,24 @@ class Memory:
         self.deque = collections.deque(maxlen=size)
         self.batch_size = batch_size
         self.exp = collections.namedtuple("experience", ["state", "action", "reward", "next_state", "done"])
-        self.state = np.zeros((size, 8), dtype=np.float32)
-        self.action = np.zeros(size, dtype=np.int32)
-        self.reward = np.zeros(size, dtype=np.float32)
-        self.next_state = np.zeros((size,8), dtype=np.float32)
-        self.done = np.zeros(size, dtype=bool)
-        self.counter = 0
 
-    def sample(self):
+    def sample(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Gets sample out of deque and convert the data to tensor for training purpusses."""
         sample = random.sample(self.deque, self.batch_size)
+        # Creates seperate list for each point in the experience
         states = []
         actions = []
         rewards = []
         next_states = []
         done = []
-        for s in sample:
+        for s in sample:    # Creates lists of seperate data
+            # Appends data to the correct list
             states.append(s.state)
-            actions.append([s.action])
+            actions.append([s.action])  # Converts to value to listso that each value will have the same dimensions
             rewards.append([s.reward])
             next_states.append(s.next_state)
             done.append([s.done])
+        # Convert data to tensors after converting the lists to arrays
         states = torch.from_numpy(np.asarray(states)).float()
         actions = torch.from_numpy(np.asarray(actions)).long()
         rewards = torch.from_numpy(np.asarray(rewards)).float()
@@ -37,16 +37,10 @@ class Memory:
         return (states, actions, rewards, next_states, done)
 
     def record(self, state, action, reward, next_state, done) -> None:
-        """Append new memory to the memory list"""
-        self.counter %= self.size
+        """Append new memory to the deque."""
         mem = self.exp(state, action, reward, next_state, done)
-        self.state[self.counter] = state
-        self.action[self.counter] = action
-        self.reward[self.counter] = reward
-        self.next_state[self.counter] = next_state
-        self.done[self.counter] = done
-        self.counter += 1
         self.deque.append(mem)
 
     def __len__(self) -> int:
+        """Gives length of the deque."""
         return len(self.deque)

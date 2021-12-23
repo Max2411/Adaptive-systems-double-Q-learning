@@ -4,7 +4,9 @@ install_requires = [
     "gym",
     "pyglet",
     "box2d"
-    "torch"
+    "torch",
+    "numpy",
+    "matplotlib"
 ]
 
 

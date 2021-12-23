@@ -1,21 +1,16 @@
 import gym
-import torch
-from pathlib import Path
-from double_deep_Q_learning.EpsilonGreedyPolicy import EpsilonGreedyPolicy
 from double_deep_Q_learning.FunctieApproximator import FunctieApproximator
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
-def deep_q_learing():
-    episodes = 1000
+def deep_q_learning():
+    """Start the reinforcement learning algorithm"""
+    episodes = 1500
     score_list = []
-    env = gym.make("LunarLander-v2")
-    # settings = (alpha=0.000025, beta=0.00025, input_dims=[8], tau=0.001, env=env, # TODO kan weg
-    #                   batch_size=64,  layer1_size=400, layer2_size=300, n_actions=2,)??
-    # greedy_policy = EpsilonGreedyPolicy(env, 0.9) # todo miss weg
-    # f_approximator = greedy_policy.functionapproximator
+    env = gym.make("LunarLander-v2")    # Create environment
     f_approximator = FunctieApproximator()
+
     for i in range(episodes):
         observation = env.reset()
         done = False
@@ -23,29 +18,28 @@ def deep_q_learing():
         while not done:
             # env.render()      # show the training
             action = f_approximator.select_action(observation)
-            new_observation, reward, done, info = env.step(action)
-
-            f_approximator.train_model(observation, action, reward, new_observation, done)  # TODO
-
+            new_observation, reward, done, info = env.step(action) # Step in the environment
+            f_approximator.train(observation, action, reward, new_observation, done)  # Step in training
             observation = new_observation
             score += reward
+
+        f_approximator.decay()
         score_list.append(score)
-        if i % 100 == 0 and i != 0:
-            print(f"\rEpisode {i}/{episodes} finished.\n"
-                  f"Average score: {np.average(score_list[-100:])}")
-    f_approximator.save_network(np.average(round(score_list[-100:])))
-    print(score_list)
-    print(len(score_list))
+        if (i+1) % 100 == 0:     # Prints average 100 scores every 100 episodes
+            print(f"\rEpisode {i+1}/{episodes} finished. Average score: {np.average(score_list[-100:])}", end="")
+
+    f_approximator.save_network(round(np.average(score_list[-100:])))
     env.close()
     plot(score_list)
 
 
-def plot(score_list):
-    plt.plot(len(score_list), score_list)
+def plot(scores):
+    plt.style.use('fivethirtyeight')
+    plt.plot(np.arange(len(scores)), scores)
     plt.ylabel("Score")
     plt.xlabel("Episode")
     plt.show()
 
 
 if __name__ == "__main__":
-    deep_q_learing()
+    deep_q_learning()
