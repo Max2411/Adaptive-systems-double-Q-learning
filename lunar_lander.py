@@ -4,6 +4,7 @@ from pathlib import Path
 from double_deep_Q_learning.EpsilonGreedyPolicy import EpsilonGreedyPolicy
 from double_deep_Q_learning.FunctieApproximator import FunctieApproximator
 import numpy as np
+import matplotlib as plt
 
 
 def deep_q_learing():
@@ -21,7 +22,6 @@ def deep_q_learing():
         score = 0
         while not done:
             # env.render()      # show the training
-            # action = env.action_space.sample()
             action = f_approximator.select_action(observation)
             new_observation, reward, done, info = env.step(action)
 
@@ -29,12 +29,22 @@ def deep_q_learing():
 
             observation = new_observation
             score += reward
-            if done:
-                new_observation = env.reset()
         score_list.append(score)
-    f_approximator.save_network()
+        if i % 100 == 0 and i != 0:
+            print(f"\rEpisode {i}/{episodes} finished.\n"
+                  f"Average score: {np.average(score_list[-100:])}")
+    f_approximator.save_network(np.average(round(score_list[-100:])))
     print(score_list)
+    print(len(score_list))
     env.close()
+    plot(score_list)
+
+
+def plot(score_list):
+    plt.plot(len(score_list), score_list)
+    plt.ylabel("Score")
+    plt.xlabel("Episode")
+    plt.show()
 
 
 if __name__ == "__main__":

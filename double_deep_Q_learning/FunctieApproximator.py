@@ -2,7 +2,7 @@
 import torch
 from torch import nn  # TODO remove torchvision if unnessassery
 import torch.nn.functional as F
-from torchvision import models
+
 import random
 
 from typing import List
@@ -23,8 +23,8 @@ weights handmatig zetten (pas belangrijk bij stap 10)
 
 
 class FunctieApproximator:
-    def __init__(self, learning_rate: float = 0.001, batch_size: int = 10, epsilon: float = 0.92, gamma: float = 0.99,
-                 update_interval: int = 10, tau: float = 0.3) -> None:
+    def __init__(self, learning_rate: float = 5e-4, batch_size: int = 64, epsilon: float = 0.92, gamma: float = 0.99,
+                 update_interval: int = 4, tau: float = 1e-3) -> None:
         self.policy_network = DeepQlearning()  # TODO is dit hier nodig
         self.target_network = DeepQlearning()
         self.optimizer = torch.optim.Adam(self.policy_network.parameters(), lr=learning_rate)
@@ -43,8 +43,8 @@ class FunctieApproximator:
 
         self.memory = Memory(size=self.mem_size, batch_size=batch_size)
 
-    def save_network(self) -> None:
-        model_name = "deep_q_model"
+    def save_network(self, score) -> None:
+        model_name = f"deep_q_model_{score}"
         # torch.save(os.path.join(f"models", model_name))
         torch.save(self.policy_network, Path("models") / model_name)
 
@@ -54,9 +54,11 @@ class FunctieApproximator:
         return model
 
     def select_action(self, state) -> int:  # TODO
-        if random.random() > self.epsilon:
+        if random.random() < self.epsilon:
+            self.policy_network.eval()
             state = torch.tensor([state])
             actions = self.policy_network.forward(state)
+            self.policy_network.train()
             action = torch.argmax(actions).item()  # TODO
         else:
             action = random.choices(self.action_space)[0]
@@ -94,8 +96,8 @@ class FunctieApproximator:
         self.copy_network()
 
     def copy_network(self):
-        for target_param, local_param in zip(self.target_network.parameters(), self.policy_network.parameters()):
-            target_param.data.copy_(self.tau * local_param.data + (1.0 - self.tau) * target_param.data)
+        for target_param, policy_param in zip(self.target_network.parameters(), self.policy_network.parameters()):
+            target_param.data.copy_(self.tau * policy_param.data + (1.0 - self.tau) * target_param.data)
 
     def set_weights(self) -> None:
         pass

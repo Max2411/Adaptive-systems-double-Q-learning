@@ -16,26 +16,25 @@ class Memory:
         self.done = np.zeros(size, dtype=bool)
         self.counter = 0
 
-    def sample(self):  # todo return to 'def sample(self):'
-        """Returns a sample of the memory"""
+    def sample(self):
         sample = random.sample(self.deque, self.batch_size)
-        checked = False
-        for exp in sample:
-            if not checked:
-                state = np.array([exp.state])
-                action = np.array([exp.action])
-                reward = np.array([exp.reward])
-                next_state = np.array([exp.next_state])
-                done = np.array(exp.done)
-            else:
-                state = np.append(state, [exp.state], axis=0)
-                action = np.append(action, [exp.action], axis=0)
-                reward = np.append(reward, [exp.reward], axis=0)
-                next_state = np.append(next_state, [exp.next_state], axis=0)
-                done = np.append(done, [exp.done], axis=0)
-            checked = True
-        return (state, action, reward, next_state, done)
-
+        states = []
+        actions = []
+        rewards = []
+        next_states = []
+        done = []
+        for s in sample:
+            states.append(s.state)
+            actions.append([s.action])
+            rewards.append([s.reward])
+            next_states.append(s.next_state)
+            done.append([s.done])
+        states = torch.from_numpy(np.asarray(states)).float()
+        actions = torch.from_numpy(np.asarray(actions)).long()
+        rewards = torch.from_numpy(np.asarray(rewards)).float()
+        next_states = torch.from_numpy(np.asarray(next_states)).float()
+        done = torch.from_numpy(np.asarray(done).astype(np.uint8))
+        return (states, actions, rewards, next_states, done)
 
     def record(self, state, action, reward, next_state, done) -> None:
         """Append new memory to the memory list"""
