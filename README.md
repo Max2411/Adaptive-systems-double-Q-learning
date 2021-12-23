@@ -34,4 +34,10 @@ of its batch.
 ![wrong landing](https://github.com/Max2411/Adaptive-systems-double-Q-learning/blob/main/wrong_landing_space.PNG)
 
 
-
+### Helpful sources:
+..* [Copy network](https://gist.github.com/abhinavsagar/a7cd1d67ad5a71589d576cd84f15b648 "Github link")  
+..* [General knowledge](https://www.youtube.com/watch?v=wc-FxNENg9U "Youtube link")     
+..* [General knowledge](https://goodboychan.github.io/python/reinforcement_learning/pytorch/udacity/2021/05/07/DQN-LunarLander.html "Web page")     
+..* [General knowledge](https://jfking50.github.io/lunar/ "Web page")       
+..* Pytorch Documentation       
+..* StackOverflow for troubleshooting       
